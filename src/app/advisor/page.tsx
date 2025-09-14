@@ -6,7 +6,7 @@ import {
 import { ObjectId } from "mongodb";
 
 export default async function AdvisorPage() {
-  const session = await requireRole("advisor");
+  const session = await requireRole(["advisor", "admin"]);
   if (!session || !session.user || !session.user.id) {
     return <div />;
   }
