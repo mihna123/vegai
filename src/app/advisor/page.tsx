@@ -1,9 +1,12 @@
 import { requireRole } from "@/lib/auth";
-import {
-  calculateCommission,
-  getCommissionsByAdvisor,
-} from "@/lib/commissions";
+import { getCommissionsByAdvisor } from "@/lib/commissions";
+import { getNotificationsForUser } from "@/lib/notifications";
 import { ObjectId } from "mongodb";
+import StatsGrid from "./components/StatsGrid";
+import { PerformanceMetric } from "@/types";
+import CommissionSummary from "./components/CommissionSummary";
+import Notifications from "./components/Notifications";
+import QuickActions from "./components/QuickActions";
 
 export default async function AdvisorPage() {
   const session = await requireRole(["advisor", "admin"]);
@@ -13,55 +16,44 @@ export default async function AdvisorPage() {
   const commissions = await getCommissionsByAdvisor(
     new ObjectId(session.user.id),
   );
+  const notifications = await getNotificationsForUser(
+    new ObjectId(session.user.id),
+  );
+
+  const commissionData = commissions?.map((c) => ({
+    period: c._id.getTimestamp().toUTCString().slice(4, 16),
+    amount: c.payout,
+    status: c.status,
+  }));
+
+  const performanceMetrics: Omit<PerformanceMetric, "_id">[] = [
+    { name: "New Clients", value: 12, target: 10, trend: "up" },
+    { name: "Policies Sold", value: 18, target: 15, trend: "up" },
+    { name: "Client Satisfaction", value: 94, target: 90, trend: "stable" },
+    { name: "Revenue", value: 84500, target: 80000, trend: "up" },
+  ];
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-bold">Advisor Dashboard</h1>
-      <p className="mb-4">Welcome, {session.user.name}</p>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Welcome back, {session.user.name}
+          </h2>
+          <p className="text-gray-600">
+            Here&apos;s your performance overview for today
+          </p>
+        </div>
 
-      <h2 className="text-lg font-semibold mb-2">Your Commissions</h2>
-      {(!commissions || commissions.length === 0) && (
-        <p>You have no sales yet!</p>
-      )}
-      {commissions && commissions.length > 0 && (
-        <table className="min-w-full border text-sm">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-3 py-2 border">Product</th>
-              <th className="px-3 py-2 border">Base</th>
-              <th className="px-3 py-2 border">After Margin</th>
-              <th className="px-3 py-2 border">Advisor Payout</th>
-              <th className="px-3 py-2 border">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {commissions.map(async (c) => {
-              const breakdown = await calculateCommission(
-                c.productId,
-                c.APE,
-                c.receipts,
-              );
-              return (
-                breakdown && (
-                  <tr key={c._id.toString()}>
-                    <td className="px-3 py-2 border">Product name</td>
-                    <td className="px-3 py-2 border">
-                      {breakdown.base.toFixed(2)}
-                    </td>
-                    <td className="px-3 py-2 border">
-                      {breakdown.afterMargin.toFixed(2)}
-                    </td>
-                    <td className="px-3 py-2 border">
-                      {breakdown.payout.advisor.toFixed(2)}
-                    </td>
-                    <td className="px-3 py-2 border">{c.status}</td>
-                  </tr>
-                )
-              );
-            })}
-          </tbody>
-        </table>
-      )}
+        <StatsGrid metrics={performanceMetrics} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <CommissionSummary data={commissionData} />
+          <div className="space-y-8">
+            <Notifications notifications={notifications} />
+            <QuickActions />
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

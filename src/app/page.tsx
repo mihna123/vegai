@@ -1,5 +1,5 @@
-import { auth, signIn, signOut } from "@/auth";
-import Image from "next/image";
+import { auth, signIn } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
   const session = await auth();
@@ -13,9 +13,11 @@ export default async function Home() {
             await signIn("google");
           }}
         >
-          <h2 className="mb-5 text-xl">Welcome to the VegAI challenge!</h2>
+          <h2 className="mb-5 text-2xl text-green-600 font-bold">
+            Welcome to the VegAI Portal!
+          </h2>
           <button
-            className="rounded-lg p-2 cursor-pointer hover:bg-gray-200 hover:scale-105 transition-all border"
+            className="cursor-pointer bg-green-100 hover:bg-green-200 text-green-800 border transition-all hover:scale-105 font-medium py-2 px-4 rounded-md text-sm"
             type="submit"
           >
             Sign in
@@ -24,32 +26,5 @@ export default async function Home() {
       </div>
     );
   }
-  return (
-    <div className="flex w-full justify-center mt-20">
-      <form
-        className="text-center"
-        action={async () => {
-          "use server";
-          await signOut();
-        }}
-      >
-        <h2 className="text-xl mb-2">Hello {session.user.name}!</h2>
-        {session.user.image && (
-          <Image
-            src={session.user.image}
-            className="rounded-full"
-            width={50}
-            height={50}
-            alt="User image"
-          />
-        )}
-        <button
-          className="rounded-lg p-2 cursor-pointer hover:bg-gray-200 hover:scale-105 transition-all border"
-          type="submit"
-        >
-          Sign out
-        </button>
-      </form>
-    </div>
-  );
+  redirect("/advisor");
 }
