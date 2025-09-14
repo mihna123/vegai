@@ -5,7 +5,8 @@ export type UserRole =
   | "advisor"
   | "introducer"
   | "manager"
-  | "esmanager";
+  | "esmanager"
+  | "admin";
 
 export type User = {
   _id: ObjectId;
@@ -34,7 +35,7 @@ export type Commission = {
   APE: number;
   receipts: number;
   payout: Payout;
-  status: "pending" | "done";
+  status: "pending" | "approved" | "denied";
 };
 
 export type Payout = object;
