@@ -13,3 +13,23 @@ export type User = {
 export interface UserClient extends Omit<User, "_id"> {
   _id: string;
 }
+
+export type Product = {
+  _id: ObjectId;
+  name: string;
+  rate: number;
+  margin: number;
+  commissions: Commission[];
+};
+
+export type Commission = {
+  _id: ObjectId;
+  advisorId: ObjectId; // reference to the user
+  productId: ObjectId;
+  APE: number;
+  receipts: number;
+  payout: Payout;
+  status: "pending" | "done";
+};
+
+export type Payout = object;
