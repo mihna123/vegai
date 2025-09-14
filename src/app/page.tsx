@@ -1,4 +1,5 @@
 import { auth, signIn } from "@/auth";
+import Image from "next/image";
 
 export default async function Home() {
   const session = await auth();
@@ -14,5 +15,16 @@ export default async function Home() {
       </form>
     );
   }
-  return <div>Hello world!</div>;
+  return (
+    <div>
+      Hello {session.user.name}!
+      <Image
+        src={session.user.image ?? ""}
+        className="rounded-full"
+        width={50}
+        height={50}
+        alt="User image"
+      />
+    </div>
+  );
 }
