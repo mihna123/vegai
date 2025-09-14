@@ -1,4 +1,4 @@
-import { auth, signIn } from "@/auth";
+import { auth, signIn, signOut } from "@/auth";
 import Image from "next/image";
 
 export default async function Home() {
@@ -18,13 +18,23 @@ export default async function Home() {
   return (
     <div>
       Hello {session.user.name}!
-      <Image
-        src={session.user.image ?? ""}
-        className="rounded-full"
-        width={50}
-        height={50}
-        alt="User image"
-      />
+      {session.user.image && (
+        <Image
+          src={session.user.image}
+          className="rounded-full"
+          width={50}
+          height={50}
+          alt="User image"
+        />
+      )}
+      <form
+        action={async () => {
+          "use server";
+          await signOut();
+        }}
+      >
+        <button type="submit">Sign out</button>
+      </form>
     </div>
   );
 }
