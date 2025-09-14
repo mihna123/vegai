@@ -25,7 +25,6 @@ export type Product = {
   name: string;
   rate: number;
   margin: number;
-  commissions: Commission[];
 };
 
 export type Commission = {
