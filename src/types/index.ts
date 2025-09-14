@@ -1,11 +1,15 @@
 import { ObjectId } from "mongodb";
 
+export type UserRole = "advisor" | "introducer" | "manager" | "esmanager";
+
 export type User = {
   _id: ObjectId;
+  name: string;
   email: string;
-  role: "advisor" | "introducer" | "manager" | "esmanager";
+  image: string;
+  role: UserRole;
 };
 
-interface UserClient extends Omit<User, "_id"> {
+export interface UserClient extends Omit<User, "_id"> {
   _id: string;
 }
