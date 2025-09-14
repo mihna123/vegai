@@ -21,7 +21,7 @@ export default async function AdvisorPage() {
 
       <h2 className="text-lg font-semibold mb-2">Your Commissions</h2>
       {(!commissions || commissions.length === 0) && (
-        <p>You have no commissions yet!</p>
+        <p>You have no sales yet!</p>
       )}
       {commissions && commissions.length > 0 && (
         <table className="min-w-full border text-sm">
