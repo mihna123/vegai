@@ -8,7 +8,7 @@ export default async function Home() {
       <form
         action={async () => {
           "use server";
-          await signIn();
+          await signIn("google");
         }}
       >
         <button type="submit">Sign in</button>
