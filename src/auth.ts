@@ -10,7 +10,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Google({
       profile(profile) {
-        return { role: profile.role ?? "advisor", ...profile };
+        return { role: profile.role ?? "client", ...profile };
       },
       allowDangerousEmailAccountLinking: true,
     }),

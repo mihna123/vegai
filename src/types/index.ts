@@ -1,6 +1,11 @@
 import { ObjectId } from "mongodb";
 
-export type UserRole = "advisor" | "introducer" | "manager" | "esmanager";
+export type UserRole =
+  | "client"
+  | "advisor"
+  | "introducer"
+  | "manager"
+  | "esmanager";
 
 export type User = {
   _id: ObjectId;
