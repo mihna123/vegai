@@ -2,13 +2,13 @@
 
 import { auth } from "@/auth";
 import { UserRole } from "@/types";
-import { signIn } from "next-auth/react";
+import { redirect } from "next/navigation";
 
-export async function requireRole(role: UserRole) {
+export async function requireRole(roles: UserRole[]) {
   const session = await auth();
 
-  if (!session?.user || session.user.role !== role) {
-    await signIn("google");
+  if (!session?.user || !roles.includes(session.user?.role as UserRole)) {
+    redirect("/");
   }
 
   return session;
