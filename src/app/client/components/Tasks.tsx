@@ -1,16 +1,22 @@
 import { TaskApiPutResponse } from "@/app/api/tasks/[id]/route";
-import { TasksApiGetResponse } from "@/app/api/tasks/route";
-import { Task } from "@/types";
+import {
+  TasksApiGetResponse,
+  TasksApiPostResponse,
+} from "@/app/api/tasks/route";
+import { ClientTask, Task, TaskPriority } from "@/types";
 import { useEffect, useState } from "react";
+import TaskForm from "./TaskForm";
+import { ObjectId } from "mongodb";
 
 export default function Tasks({
   userId,
   clientId,
 }: {
   userId: string;
-  clientId: string | null;
+  clientId: string;
 }) {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -26,6 +32,16 @@ export default function Tasks({
   const clientTasksFiltered = clientId
     ? tasks.filter((task) => task.clientId.toString() === clientId)
     : [];
+
+  const openModal = () => {
+    setIsModalOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    document.body.style.overflow = "auto";
+  };
 
   const toggleTaskCompletion = async (taskId: string) => {
     try {
@@ -47,6 +63,7 @@ export default function Tasks({
           "There has been an error with task update:",
           await res.text(),
         );
+        return;
       }
       const data = (await res.json()) as TaskApiPutResponse;
       setTasks((prev) => {
@@ -58,6 +75,45 @@ export default function Tasks({
       });
     } catch (error) {
       console.error("Error while updating task status:", error);
+    }
+  };
+
+  const handleTaskSubmit = async (props: {
+    title: string;
+    dueDate: string;
+    priority: string;
+  }) => {
+    try {
+      const newTask: Omit<ClientTask, "_id"> = {
+        ...props,
+        priority: props.priority as TaskPriority,
+        clientId: clientId,
+        ownerId: userId,
+        completed: false,
+      };
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        body: JSON.stringify({ task: newTask }),
+      });
+      if (!res.ok) {
+        console.error(
+          "There has been an error with task creation:",
+          await res.text(),
+        );
+        return;
+      }
+      const data = (await res.json()) as TasksApiPostResponse;
+      setTasks((prev) => {
+        const newTasks = prev.filter((t) => t._id !== data.task._id);
+        return [...newTasks, data.task].sort(
+          (a, b) =>
+            new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
+        );
+      });
+    } catch (error) {
+      console.error("Error while creating a task:", error);
+    } finally {
+      closeModal();
     }
   };
 
@@ -75,9 +131,28 @@ export default function Tasks({
   };
   return (
     <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+      <div
+        className={`fixed inset-0 z-10 bg-black/60 transition-all duration-700 ${
+          isModalOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      />
+      <div
+        className={`fixed inset-0 z-20 flex items-center justify-center px-4 transition-all duration-700 ${
+          isModalOpen
+            ? "translate-y-0 opacity-100"
+            : `pointer-events-none translate-y-full opacity-0`
+        }`}
+        onClick={closeModal}
+      >
+        <TaskForm onTaskSubmit={handleTaskSubmit} edit={false} />
+      </div>
+
       <div className="px-4 py-5 border-b border-gray-200 sm:px-6 flex justify-between items-center">
         <h3 className="text-lg leading-6 font-medium text-gray-900">Tasks</h3>
-        <button className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md text-sm">
+        <button
+          onClick={openModal}
+          className="bg-green-600 border border-black hover:scale-105 transition-all cursor-pointer hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md text-sm"
+        >
           Add Task
         </button>
       </div>

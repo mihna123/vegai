@@ -1,4 +1,5 @@
-import { getClientsByAdvisor, getNotesByAdvisor } from "@/lib/clients";
+import { getClientsByAdvisor } from "@/lib/clients";
+import { getNotesByAdvisor } from "@/lib/notes";
 import { getProductsByIds } from "@/lib/products";
 import { getTasksByUser } from "@/lib/tasks";
 import { Client, ClientNote, Product, Task } from "@/types";

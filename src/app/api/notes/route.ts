@@ -1,10 +1,19 @@
 import { getNotesByAdvisor } from "@/lib/clients";
+import { addNewNote } from "@/lib/notes";
 import { ClientNote } from "@/types";
 import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export type NotesApiGetResponse = {
   notes?: ClientNote[];
+};
+
+export type NotesApiPostBody = {
+  note: Omit<ClientNote, "_id">;
+};
+
+export type NotesApiPostResponse = {
+  note: ClientNote;
 };
 
 export async function GET(request: NextRequest) {
@@ -22,6 +31,26 @@ export async function GET(request: NextRequest) {
     console.error("Error while fetching notes:", error);
     return new NextResponse(
       `Error while fetching notes: ${(error as Error).message}`,
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const { note } = (await request.json()) as NotesApiPostBody;
+    const res = await addNewNote(note);
+    if (!res) {
+      return new NextResponse("Error while creating a note.", { status: 500 });
+    }
+    return NextResponse.json<NotesApiPostResponse>(
+      { note: res },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Error while creating a note:", error);
+    return new NextResponse(
+      `Error while creating a note: ${(error as Error).message}`,
       { status: 500 },
     );
   }

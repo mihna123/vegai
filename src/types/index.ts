@@ -69,13 +69,25 @@ export type Client = {
   phone: string;
 };
 
+export type ClientNoteType = "meeting" | "call" | "email" | "note";
+
 export type ClientNote = {
   _id: ObjectId;
   clientId: ObjectId;
   ownerId: ObjectId;
   content: string;
-  type: "meeting" | "call" | "email" | "note";
+  type: ClientNoteType;
 };
+
+export type ClientNoteClient = {
+  _id: string;
+  clientId: string;
+  ownerId: string;
+  content: string;
+  type: ClientNoteType;
+};
+
+export type TaskPriority = "high" | "medium" | "low";
 
 export type Task = {
   _id: ObjectId;
@@ -83,6 +95,16 @@ export type Task = {
   ownerId: ObjectId;
   title: string;
   dueDate: Date;
-  priority: "high" | "medium" | "low";
+  priority: TaskPriority;
+  completed: boolean;
+};
+
+export type ClientTask = {
+  _id: string;
+  clientId: string;
+  ownerId: string;
+  title: string;
+  dueDate: string;
+  priority: TaskPriority;
   completed: boolean;
 };

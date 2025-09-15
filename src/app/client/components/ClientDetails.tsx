@@ -39,10 +39,10 @@ export default function ClientDetails({
                 </p>
               </div>
               <div className="flex space-x-2">
-                <button className="bg-white hover:bg-gray-100 text-gray-700 font-medium py-2 px-4 border border-gray-300 rounded-md text-sm">
+                <button className="bg-white hover:bg-gray-100 transition-all cursor-pointer hover:scale-105 text-gray-700 font-medium py-2 px-4 border border-gray-300 rounded-md text-sm">
                   Edit
                 </button>
-                <button className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md text-sm">
+                <button className="bg-green-600 border border-black hover:scale-105 transition-all cursor-pointer hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md text-sm">
                   Contact
                 </button>
               </div>
