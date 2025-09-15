@@ -1,32 +1,12 @@
 import { requireRole } from "@/lib/auth";
+import ClientPage from "./components/ClientPage";
 
-export default async function ClientPage() {
+export default async function Page() {
   const session = await requireRole(["client", "admin"]);
+  // TODO: come monday, make this more server based and db based. Also do a little of role based stuff and thats that
   if (!session || !session.user) {
     return <div />;
   }
 
-  // Fake case data for demo
-  const cases = [
-    { id: 1, status: "Pending Approval", lastUpdate: "2025-09-10" },
-    { id: 2, status: "Approved", lastUpdate: "2025-09-05" },
-  ];
-
-  return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold">Client Portal</h1>
-      <p className="mb-4">Welcome, {session.user.email}</p>
-
-      <h2 className="text-lg font-semibold mb-2">Your Cases</h2>
-      <ul className="space-y-2">
-        {cases.map((c) => (
-          <li key={c.id} className="p-3 border rounded">
-            <p>Case #{c.id}</p>
-            <p>Status: {c.status}</p>
-            <p>Last Update: {c.lastUpdate}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+  return <ClientPage userId={session.user.id?.toString() ?? ""} />;
 }

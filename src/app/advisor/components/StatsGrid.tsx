@@ -13,7 +13,13 @@ export default function StatsGrid({ metrics }: StatsGridProps) {
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-green-100 rounded-md p-3">
                 <div
-                  className={`h-6 w-6 text-${metric.trend === "up" ? "green" : metric.trend === "down" ? "red" : "gray"}-600`}
+                  className={`h-6 w-6 flex items-center justify-center text-${
+                    metric.trend === "up"
+                      ? "green"
+                      : metric.trend === "down"
+                        ? "red"
+                        : "gray"
+                  }-600`}
                 >
                   {metric.trend === "up"
                     ? "↗"

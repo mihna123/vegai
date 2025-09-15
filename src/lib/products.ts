@@ -12,3 +12,18 @@ export async function getProductById(productId: ObjectId) {
     console.error("Error while fetching products:", error);
   }
 }
+
+export async function getProductsByIds(productIds: ObjectId[]) {
+  if (!productIds || productIds.length === 0) {
+    return [];
+  }
+  try {
+    const { db } = await connectToDatabase();
+    return await db
+      .collection<Product>(COLLECTION)
+      .find({ _id: { $in: productIds } })
+      .toArray();
+  } catch (error) {
+    console.error("Error while fetching products:", error);
+  }
+}

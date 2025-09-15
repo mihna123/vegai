@@ -13,7 +13,7 @@ export default async function Navigation() {
           <nav className="ml-8 flex space-x-8">
             <Link
               href="/advisor"
-              className="text-gray-900 hover:text-green-600 font-medium"
+              className="text-gray-500 hover:text-green-600 font-medium"
             >
               Dashboard
             </Link>

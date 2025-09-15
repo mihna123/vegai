@@ -53,3 +53,36 @@ export type Notification = {
   message: string;
   read: boolean;
 };
+
+export type ClientStatus = "active" | "prospect" | "inactive";
+
+export type Client = {
+  _id: ObjectId;
+  advisorId: ObjectId;
+  name: string;
+  status: ClientStatus;
+  lastContact: Date;
+  nextAppointment: Date;
+  value: number;
+  productsIds: ObjectId[];
+  email: string;
+  phone: string;
+};
+
+export type ClientNote = {
+  _id: ObjectId;
+  clientId: ObjectId;
+  ownerId: ObjectId;
+  content: string;
+  type: "meeting" | "call" | "email" | "note";
+};
+
+export type Task = {
+  _id: ObjectId;
+  clientId: ObjectId;
+  ownerId: ObjectId;
+  title: string;
+  dueDate: Date;
+  priority: "high" | "medium" | "low";
+  completed: boolean;
+};
