@@ -69,6 +69,19 @@ export type Client = {
   phone: string;
 };
 
+export type ClientClient = {
+  _id: string;
+  advisorId: string;
+  name: string;
+  status: ClientStatus;
+  lastContact: string;
+  nextAppointment: string;
+  value: number;
+  productsIds: string[];
+  email: string;
+  phone: string;
+};
+
 export type ClientNoteType = "meeting" | "call" | "email" | "note";
 
 export type ClientNote = {

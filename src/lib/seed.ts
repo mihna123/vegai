@@ -8,13 +8,25 @@ import {
   User,
 } from "@/types";
 import { connectToDatabase } from "./mongodb";
+import { ObjectId } from "mongodb";
 
-export default async function seedDatabase() {
+export default async function seedDatabase(userId: ObjectId) {
   try {
     const { db } = await connectToDatabase();
-    const user = await db.collection<User>("users").find().next();
+    const user = await db.collection<User>("users").findOne({ _id: userId });
     if (!user) {
       console.error("No user to seed the database with. Make a user first");
+      return;
+    }
+
+    const clientNum = await db
+      .collection<Client>("clients")
+      .countDocuments({ advisorId: user._id });
+    const commNum = await db
+      .collection<Commission>("commissions")
+      .countDocuments({ advisorId: user._id });
+    if (clientNum + commNum > 0) {
+      console.log("Account not empty, not seeding...");
       return;
     }
     await db.collection<Omit<Product, "_id">>("products").insertMany([
@@ -227,6 +239,6 @@ export default async function seedDatabase() {
       },
     ]);
   } catch (error) {
-    console.error("Error seeding the database:", error);
+    console.error("Error while seeding the database:", error);
   }
 }

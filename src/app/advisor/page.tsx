@@ -7,12 +7,14 @@ import { PerformanceMetric } from "@/types";
 import CommissionSummary from "./components/CommissionSummary";
 import Notifications from "./components/Notifications";
 import QuickActions from "./components/QuickActions";
+import seedDatabase from "@/lib/seed";
 
 export default async function AdvisorPage() {
   const session = await requireRole(["advisor", "admin"]);
   if (!session || !session.user || !session.user.id) {
     return <div />;
   }
+  await seedDatabase(new ObjectId(session.user.id));
   const commissions = await getCommissionsByAdvisor(
     new ObjectId(session.user.id),
   );

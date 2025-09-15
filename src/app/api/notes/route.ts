@@ -1,4 +1,4 @@
-import { getNotesByAdvisor } from "@/lib/clients";
+import { getNotesByAdvisor } from "@/lib/notes";
 import { addNewNote } from "@/lib/notes";
 import { ClientNote } from "@/types";
 import { ObjectId } from "mongodb";

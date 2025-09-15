@@ -36,7 +36,7 @@ export default function NotesForm({
           cols={40}
           rows={3}
           onChange={(e) => setContent(e.target.value)}
-          className="h-10 w-full bg-white border rounded-lg p-2"
+          className="w-full bg-white border rounded-lg p-2"
           placeholder="Note text"
           required
         />

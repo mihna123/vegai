@@ -1,16 +1,31 @@
-import { Client, Product } from "@/types";
+import { Client, ClientClient, Product } from "@/types";
 import Notes from "./Notes";
 import Tasks from "./Tasks";
+import { useState } from "react";
+import ClientForm from "./ClientForm";
+import { ClientsApiPutResponse } from "@/app/api/clients/[id]/route";
 
 export default function ClientDetails({
   selectedClient,
   products,
   userId,
+  onClientUpdate,
 }: {
   selectedClient?: Client;
   products: Product[];
   userId: string;
+  onClientUpdate: (client: Client) => void;
 }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => {
+    setIsModalOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    document.body.style.overflow = "auto";
+  };
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -23,9 +38,67 @@ export default function ClientDetails({
         return "bg-gray-100 text-gray-800";
     }
   };
+  const handleEditClient = async (client: Omit<ClientClient, "_id">) => {
+    try {
+      const res = await fetch(
+        `/api/clients/${selectedClient?._id.toString() ?? ""}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({ update: client }),
+        },
+      );
+      if (!res.ok) {
+        console.error(
+          "There has been an error with client update:",
+          await res.text(),
+        );
+        return;
+      }
+      const data = (await res.json()) as ClientsApiPutResponse;
+      onClientUpdate(data.client);
+    } catch (error) {
+      console.error("Error while creating a task:", error);
+    } finally {
+      closeModal();
+    }
+  };
 
   return (
     <div className="lg:col-span-2">
+      <div
+        className={`fixed inset-0 z-10 bg-black/60 transition-all duration-700 ${
+          isModalOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      />
+      <div
+        className={`fixed inset-0 z-20 flex items-center justify-center px-4 transition-all duration-700 ${
+          isModalOpen
+            ? "translate-y-0 opacity-100"
+            : `pointer-events-none translate-y-full opacity-0`
+        }`}
+        onClick={closeModal}
+      >
+        {selectedClient && (
+          <ClientForm
+            onClientSubmit={handleEditClient}
+            editClient={{
+              ...selectedClient,
+              _id: selectedClient._id.toString(),
+              advisorId: selectedClient.advisorId.toString(),
+              lastContact: new Date(selectedClient.lastContact)
+                .toISOString()
+                .slice(0, 16),
+              nextAppointment: new Date(selectedClient.nextAppointment)
+                .toISOString()
+                .slice(0, 16),
+              productsIds: selectedClient.productsIds.map((id) =>
+                id.toString(),
+              ),
+            }}
+            userId={userId}
+          />
+        )}
+      </div>
       {selectedClient ? (
         <div className="space-y-8">
           <div className="bg-white shadow overflow-hidden sm:rounded-lg">
@@ -39,12 +112,18 @@ export default function ClientDetails({
                 </p>
               </div>
               <div className="flex space-x-2">
-                <button className="bg-white hover:bg-gray-100 transition-all cursor-pointer hover:scale-105 text-gray-700 font-medium py-2 px-4 border border-gray-300 rounded-md text-sm">
+                <button
+                  onClick={openModal}
+                  className="bg-white hover:bg-gray-100 transition-all cursor-pointer hover:scale-105 text-gray-700 font-medium py-2 px-4 border border-gray-300 rounded-md text-sm"
+                >
                   Edit
                 </button>
-                <button className="bg-green-600 border border-black hover:scale-105 transition-all cursor-pointer hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md text-sm">
+                <a
+                  href={`mailto:${selectedClient.email}`}
+                  className="bg-green-600 border border-black hover:scale-105 transition-all cursor-pointer hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md text-sm"
+                >
                   Contact
-                </button>
+                </a>
               </div>
             </div>
             <div className="border-t border-gray-200 px-4 py-5 sm:p-6">
